@@ -8,7 +8,6 @@
 </head>
 <body class="bg-gradient-to-b from-gray-50 to-gray-200 min-h-screen text-gray-800">
 
-
   <div class="flex h-screen overflow-hidden">
     <!-- Sidebar -->
     <aside class="w-72 bg-indigo-900 text-white flex flex-col">
