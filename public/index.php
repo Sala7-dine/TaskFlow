@@ -1,3 +1,33 @@
+<?php
+
+require_once '../classes/User.php';
+
+session_start();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+
+  $name = $_POST['name'] ?? '';
+  $email = $_POST['email'] ?? '';
+
+  if (!empty($name) && !empty($email)) {
+
+      $user = new User();
+      $existingUserId = $user->userExists($email);
+
+      if ($existingUserId) {
+          $_SESSION['user_id'] = $existingUserId;
+      } else {
+          $userId = $user->create($name, $email);
+          $_SESSION['user_id'] = $userId;
+      }
+  } else {
+      echo "<script>alert('Veuillez remplir tous les champs.');</script>";
+  }
+}
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,48 +39,11 @@
 <body class="bg-gradient-to-b from-gray-50 to-gray-200 min-h-screen text-gray-800">
 
   <div class="flex h-screen overflow-hidden">
+    
     <!-- Sidebar -->
-    <aside class="w-72 bg-indigo-900 text-white flex flex-col">
+     <?php require_once "../templates/sidebar.php" ?>
 
-      <div class="p-6">
-        <h1 class="text-2xl font-bold tracking-wide text-center">
-          <span class="flex items-center justify-center">
-            <svg class="w-8 h-8 mr-2 text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2a10 10 0 100 20 10 10 0 000-20zM8.75 11h6.5a.75.75 0 010 1.5h-6.5a.75.75 0 010-1.5z" />
-            </svg>
-            TaskFlow
-          </span>
-        </h1>
-        <p class="text-center mt-2 text-gray-300">Efficient Task Management</p>
-      </div>
-
-      <nav class="mt-8 space-y-4 px-6">
-        <a href="#" class="flex items-center px-3 py-2 text-sm font-medium bg-indigo-800 rounded-lg hover:bg-indigo-700">
-            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          Dashboard
-        </a>
-        <a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-indigo-700">
-          <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          My Tasks
-        </a>
-        <a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-indigo-700">
-        <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          Team
-        </a>
-        <a href="#" class="flex items-center px-3 py-2 text-sm font-medium text-gray-300 rounded-lg hover:bg-indigo-700">
-            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          Settings
-        </a>
-      </nav>
-    </aside>
+     <?php require_once "../templates/ModalUser.php" ?>
 
     <!-- Main Content -->
     <main class="flex-1 p-8 overflow-y-auto">
@@ -59,15 +52,19 @@
         <h2 class="text-2xl font-bold">Task Board</h2>
 
         <div class="flex gap-2">
-            <button class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">
+            <button id="addtask" class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">
             <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
             Add Task
             </button>
-            <button class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">
-                Deconnexion
-            </button>
+
+            
+              <a href="deconnexion.php" class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">
+                  Deconnexion
+              </a>
+            
+            
         </div>
 
       </header>
@@ -75,11 +72,11 @@
       <!-- Modal de Formulaire de creation de Tache  -->
 
       <div
-            class="fixed inset-0 p-4 hidden flex-wrap justify-center items-center w-full h-full z-[1000] before:fixed before:inset-0 before:w-full before:h-full before:bg-[rgba(0,0,0,0.5)] overflow-auto font-[sans-serif]">
+            id="taskModal" class="fixed inset-0 p-4 hidden flex-wrap justify-center items-center w-full h-full z-[1000] before:fixed before:inset-0 before:w-full before:h-full before:bg-[rgba(0,0,0,0.5)] overflow-auto font-[sans-serif]">
             <div class="w-full max-w-lg bg-white shadow-lg rounded-lg p-8 relative">
                 <div class="flex items-center">
                     <h3 class="text-indigo-600 text-xl font-bold flex-1">Add New Task</h3>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 ml-2 cursor-pointer shrink-0 fill-gray-400 hover:fill-red-500"
+                    <svg id="close" xmlns="http://www.w3.org/2000/svg" class="w-3 ml-2 cursor-pointer shrink-0 fill-gray-400 hover:fill-red-500"
                         viewBox="0 0 320.591 320.591">
                         <path
                             d="M30.391 318.583a30.37 30.37 0 0 1-21.56-7.288c-11.774-11.844-11.774-30.973 0-42.817L266.643 10.665c12.246-11.459 31.462-10.822 42.921 1.424 10.362 11.074 10.966 28.095 1.414 39.875L51.647 311.295a30.366 30.366 0 0 1-21.256 7.288z"
@@ -90,27 +87,27 @@
                     </svg>
                 </div>
 
-                <form class="space-y-4 mt-8">
+                <form class="space-y-4 mt-8" action="createTask.php" method="POST">
                     <div>
                         <label class="text-gray-800 text-sm mb-2 block">Title Task</labe>
-                        <input type="text" placeholder="Enter Title Task..."
+                        <input type="text" name="title" placeholder="enter title task..."
                             class="px-4 py-3 bg-gray-100 w-full text-gray-800 text-sm border-none focus:outline-indigo-600 focus:bg-transparent rounded-lg" />
                     </div>
 
                     <div>
                         <label class="text-gray-800 text-sm mb-2 block">Descriptions</labe>
-                        <textarea placeholder='Write about the Task'
+                        <textarea placeholder='write about the task...' name="description"
                             class="px-4 py-3 bg-gray-100 w-full text-gray-800 text-sm border-none focus:outline-indigo-600 focus:bg-transparent rounded-lg" rows="3"></textarea>
                     </div>
 
                    <!-- Status -->
                     <div class="mb-4">
                     <label for="status" class="block text-sm font-medium text-gray-700">Assigné à</label>
-                    <select id="status" name="status" class="px-4 py-4 bg-gray-100 w-full text-gray-800 text-sm border-none focus:outline-indigo-600 focus:bg-transparent rounded-lg">
-                        <option value="To Do">Salah</option>
-                        <option value="In Progress">Adil</option>
-                        <option value="Done">Badr</option>
-                        <option value="Done">Smail</option>
+                    <select id="assinedTo" name="assinedTo" class="px-4 py-4 bg-gray-100 w-full text-gray-800 text-sm border-none focus:outline-indigo-600 focus:bg-transparent rounded-lg">
+                        <option value="">Salah</option>
+                        <option value="">Adil</option>
+                        <option value="">Badr</option>
+                        <option value="">Smail</option>
                     </select>
                     </div>
 
@@ -118,16 +115,21 @@
                     <div class="mb-4">
                     <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
                     <select id="type" name="type" class="px-4 py-4 bg-gray-100 w-full text-gray-800 text-sm border-none focus:outline-indigo-600 focus:bg-transparent rounded-lg" required>
-                        <option value="Bug">Simple Tache</option>
+                        <option value="">Simple Tache</option>
                         <option value="Bug">Bug</option>
                         <option value="Feature">Feature</option>
                     </select>
                     </div>
+                    
+                    <div id="TypeTask">
+                      
+
+                    </div>
 
                     <div class="flex justify-end gap-4 !mt-8">
-                        <button type="button"
+                        <button type="button" id="close1"
                             class="px-6 py-3 rounded-lg text-gray-800 text-sm border-none outline-none tracking-wide bg-gray-200 hover:bg-gray-300">Cancel</button>
-                        <button type="button"
+                        <button type="submit"
                             class="px-6 py-3 rounded-lg text-white text-sm border-none outline-none tracking-wide bg-indigo-600 hover:bg-indigo-700">Submit</button>
                     </div>
                 </form>
@@ -187,6 +189,97 @@
       </div>
     </main>
   </div>
+
+
+
+<script>
+
+  let addtask = document.getElementById("addtask");
+  let taskModal = document.getElementById("taskModal");
+  let close = document.getElementById("close");
+  let close1 = document.getElementById("close1");
+  let type = document.getElementById("type");
+  let TypeTask = document.getElementById("TypeTask");  
+
+  addtask.addEventListener("click" , ()=>{
+
+    taskModal.classList.remove("hidden");
+    taskModal.classList.add("flex");
+
+  });
+
+  close.addEventListener("click" , ()=>{
+
+    taskModal.classList.add("hidden");
+    taskModal.classList.remove("flex");
+
+  });
+
+  close1.addEventListener("click" , ()=>{
+
+    taskModal.classList.add("hidden");
+    taskModal.classList.remove("flex");
+
+  });
+
+
+  function SevertyInput(){
+      div = `
+          <div class="mb-4">
+            <label for="type" class="block text-sm font-medium text-gray-700">Severity</label>
+            <select id="severity" name="severity" class="px-4 py-4 bg-gray-100 w-full text-gray-800 text-sm border-none focus:outline-indigo-600 focus:bg-transparent rounded-lg" required>
+                <option value="Minor">Minor</option>
+                <option value="Major">Major</option>
+                <option value="Critical">Critical</option>
+        </select>
+        </div>
+      `
+    return div;
+  }
+
+  function PriorityInput(){
+      div = `
+          <div class="mb-4">
+            <label for="type" class="block text-sm font-medium text-gray-700">Priority</label>
+            <select id="priority" name="priority" class="px-4 py-4 bg-gray-100 w-full text-gray-800 text-sm border-none focus:outline-indigo-600 focus:bg-transparent rounded-lg" required>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+          </select>
+          </div>
+         `
+
+      return div;
+  }
+
+
+  type.addEventListener("change" , (e)=>{
+    console.log(e.target.value);
+    let value = e.target.value;
+    if(value === "Bug"){
+
+      TypeTask.innerHTML = "";
+      TypeTask.innerHTML += SevertyInput();
+
+    }else if(value === "Feature"){
+
+      TypeTask.innerHTML = "";
+      TypeTask.innerHTML += PriorityInput();
+      
+    }else{
+    
+      TypeTask.innerHTML = "";
+    }
+  })
+
+
+
+
+
+
+
+
+</script>
 
 </body>
 </html>
