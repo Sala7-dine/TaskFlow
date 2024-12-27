@@ -186,8 +186,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             
             ?>
 
-            
-            
           </div>
         </div>
 
@@ -198,7 +196,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
               <!-- Task Card -->
               <?php
 
-                        foreach($tasks as $task){
+                    foreach($tasks as $task){
 
                           if($task['status'] === "In Progress"){
                             echo '
@@ -218,12 +216,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                                       <option value="Done">Done</option>
                                   </select>
                               </form>
-                            </div> ';
+                            </div> 
+                            
+                            
+                            
+                            ';
 
                           }
                         }
 
                   ?>
+
+
+
           </div>
         </div>
 

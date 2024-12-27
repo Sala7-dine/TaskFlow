@@ -58,5 +58,22 @@ class Task extends Database {
         
     }
 
+
+    public function getTaskDetails($taskId) {
+        $query = "
+            SELECT t.*, 
+                   b.bug_description, b.priority AS bug_priority, 
+                   f.feature_description, f.estimated_time AS feature_time
+            FROM tasks t
+            LEFT JOIN bugs b ON t.task_id = b.task_id
+            LEFT JOIN features f ON t.task_id = f.task_id
+            WHERE t.task_id = :task_id
+        ";
+        $stmt = $this->connexion->prepare($query);
+        $stmt->bindParam(':task_id', $taskId, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
+
 }
 ?>
