@@ -12,11 +12,11 @@ class Feature extends Task{
     
     public function createFeature($title, $description, $status, $type ,  $userId, $priority) {
         
-        // D'abord, on crée la tâche de base
+    
         $taskId = $this->create($title, $description, $type, $status, $userId);
         
         if ($taskId) {
-            // Ensuite, on ajoute les informations spécifiques aux features
+    
             $query = "INSERT INTO features (task_id, priority) VALUES (:task_id, :priority)";
             $stmt = $this->connexion->prepare($query);
             

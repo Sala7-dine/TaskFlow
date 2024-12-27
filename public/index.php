@@ -161,21 +161,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
               if($task['status'] === "To Do"){
 
                 echo '
-
-                <div class="bg-gray-100 p-4 rounded-lg shadow-sm hover:shadow-md">
-                            <a href="taskDetail.php?idTask='.$task["task_id"].'" class="font-semibold text-gray-700 hover:underline hover:cursor-pointer">'.$task["titre"].'</a>
+                <div class="bg-gray-100 p-4 rounded-lg border-2 
+                  ' . ($task['type'] === 'Bug' ? 'border-red-500' : ($task['type'] === 'Feature' ? 'border-green-500' : 'border-blue-500')) . ' 
+                  shadow-sm hover:shadow-md">
+                  <a href="taskDetail.php?idTask='.$task["task_id"].'" class="font-semibold text-gray-700 hover:underline hover:cursor-pointer">'.$task["titre"].'</a>
                   <p class="text-sm text-gray-500 mt-2">Assigned to '.$task["username"].'</p>
                   <div class="mt-2 text-xs flex justify-between text-gray-400">
                     <span>Due: '.$task["created_at"].'</span>
                   
                   </div>
 
-                  <select name="status" class="mt-1 block w-full p-2 border rounded-md bg-white text-gray-700 focus:ring focus:ring-blue-300">
-                      <option value="to_do" <?= $task["status"] === "to_do" ? "selected" : "" ?>To Do</option>
-                      <option value="in_progress" <?= $task["status"] === "in_progress" ? "selected" : "" ?>In Progress</option>
-                      <option value="done" <?= $task["status"] === "done" ? "selected" : "" ?>Done</option>
-                  </select>
-                  
+                  <form action="updateTaskStatus.php" method="POST">
+                      <input type="hidden" name="task_id" value="'.$task['task_id'].'">
+                      <select name="status"  onchange="this.form.submit()" class="mt-1 block w-full p-2 border rounded-md bg-white text-gray-700 focus:ring focus:ring-blue-300">
+                          <option value="To Do">To Do</option>
+                          <option value="In Progress">In Progress</option>
+                          <option value="Done">Done</option>
+                      </select>
+                  </form>
                 </div> ';
 
               }
@@ -199,12 +202,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
 
                           if($task['status'] === "In Progress"){
                             echo '
-                            <div class="bg-gray-100 p-4 rounded-lg  shadow-sm hover:shadow-md">
+                            <div class="bg-gray-100 p-4 rounded-lg border-2 
+                                ' . ($task['type'] === 'Bug' ? 'border-red-500' : ($task['type'] === 'Feature' ? 'border-green-500' : 'border-blue-500')) . ' 
+                                shadow-sm hover:shadow-md">
                             <a href="taskDetail.php?idTask='.$task["task_id"].'" class="font-semibold text-gray-700 hover:underline hover:cursor-pointer">'.$task["titre"].'</a>
                               <p class="text-sm text-gray-500 mt-2">Assigned to '.$task["username"].'</p>
                               <div class="mt-2 text-xs flex justify-between text-gray-400">
                                 <span>Due: '.$task["created_at"].'</span>
                               </div>
+                              <form action="updateTaskStatus.php" method="POST">
+                                  <input type="hidden" name="task_id" value="'.$task['task_id'].'">
+                                  <select name="status"  onchange="this.form.submit()" class="mt-1 block w-full p-2 border rounded-md bg-white text-gray-700 focus:ring focus:ring-blue-300">
+                                      <option value="To Do">To Do</option>
+                                      <option value="In Progress" selected>In Progress</option>
+                                      <option value="Done">Done</option>
+                                  </select>
+                              </form>
                             </div> ';
 
                           }
@@ -227,13 +240,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
 
                           echo '
 
-                          <div class="bg-gray-100 p-4 rounded-lg shadow-sm hover:shadow-md">
+                          <div class="bg-gray-100 p-4 rounded-lg border-2 
+                              ' . ($task['type'] === 'Bug' ? 'border-red-500' : ($task['type'] === 'Feature' ? 'border-green-500' : 'border-blue-500')) . ' 
+                              shadow-sm hover:shadow-md">
                             <a href="taskDetail.php?idTask='.$task["task_id"].'" class="font-semibold text-gray-700 hover:underline hover:cursor-pointer">'.$task["titre"].'</a>
                             <p class="text-sm text-gray-500 mt-2">Assigned to '.$task["username"].'</p>
                             <div class="mt-2 text-xs flex justify-between text-gray-400">
                               <span>Due: '.$task["created_at"].'</span>
                             
                             </div>
+
+                            <form action="updateTaskStatus.php" method="POST">
+                                <input type="hidden" name="task_id" value="'.$task['task_id'].'">
+                                <select name="status"  onchange="this.form.submit()" class="mt-1 block w-full p-2 border rounded-md bg-white text-gray-700 focus:ring focus:ring-blue-300">
+                                    <option value="To Do">To Do</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Done" selected>Done</option>
+                                </select>
+                            </form>
                           </div> ';
 
                         }

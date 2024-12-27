@@ -31,7 +31,7 @@ class Task extends Database {
 
     public function getTasks(){
 
-        $query = "SELECT T.id as task_id , T.title as titre , U.id as user_id , created_at , U.name as username , status FROM tasks T join users U on T.assigned_to = U.id";
+        $query = "SELECT T.id as task_id , T.title as titre , U.id as user_id , created_at , U.name as username , type , status FROM tasks T join users U on T.assigned_to = U.id";
         $stmt = $this->connexion->prepare($query);
         $stmt->execute();
         $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);

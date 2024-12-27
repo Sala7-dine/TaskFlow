@@ -36,7 +36,6 @@ class User extends Database{
         $stmt->execute();
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Retourne true si l'utilisateur existe, sinon false
         return $user ? $user['id'] : false;
     }
 
