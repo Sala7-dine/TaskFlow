@@ -1,8 +1,16 @@
 <?php
 
-require_once '../classes/User.php';
+require_once '../classes/User.php'; 
+require_once '../classes/Task.php'; 
 
 session_start();
+$user = new User();
+$users = $user->getusers();
+
+$task = new Task();
+$tasks = $task->getTasks();
+
+//print_r($task->getTasks()); 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'){
 
@@ -11,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
 
   if (!empty($name) && !empty($email)) {
 
-      $user = new User();
       $existingUserId = $user->userExists($email);
 
       if ($existingUserId) {
@@ -58,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
             </svg>
             Add Task
             </button>
-
             
               <a href="deconnexion.php" class="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700">
                   Deconnexion
@@ -104,10 +110,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                     <div class="mb-4">
                     <label for="status" class="block text-sm font-medium text-gray-700">Assigné à</label>
                     <select id="assinedTo" name="assinedTo" class="px-4 py-4 bg-gray-100 w-full text-gray-800 text-sm border-none focus:outline-indigo-600 focus:bg-transparent rounded-lg">
-                        <option value="">Salah</option>
-                        <option value="">Adil</option>
-                        <option value="">Badr</option>
-                        <option value="">Smail</option>
+                      
+                        <?php 
+                        foreach($users as $user){
+                            echo "<option value='".$user['id']."'>".$user['name']."</option>";
+                        }
+                        ?>
                     </select>
                     </div>
 
@@ -115,9 +123,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                     <div class="mb-4">
                     <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
                     <select id="type" name="type" class="px-4 py-4 bg-gray-100 w-full text-gray-800 text-sm border-none focus:outline-indigo-600 focus:bg-transparent rounded-lg" required>
-                        <option value="">Simple Tache</option>
-                        <option value="Bug">Bug</option>
-                        <option value="Feature">Feature</option>
+                        <option value="simple">Simple Tache</option>
+                        <option value="bug">Bug</option>
+                        <option value="feature">Feature</option>
                     </select>
                     </div>
                     
@@ -145,15 +153,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         <div class="bg-white rounded-lg shadow-md">
           <div class="bg-indigo-500 text-white font-semibold p-4 rounded-t-lg">To Do</div>
           <div class="p-4 space-y-4">
-            <!-- Task Card -->
-            <div class="bg-gray-100 p-4 rounded-lg shadow-sm hover:shadow-md">
-              <h3 class="font-semibold text-gray-700">Design Login Page</h3>
-              <p class="text-sm text-gray-500 mt-2">Assigned to Alice</p>
-              <div class="mt-2 text-xs flex justify-between text-gray-400">
-                <span>Due: 2024-12-30</span>
-               
-              </div>
-            </div>
+             <!-- Task Card -->
+            <?php
+
+            foreach($tasks as $task){
+
+              if($task['status'] === "To Do"){
+
+                echo '
+
+                <div class="bg-gray-100 p-4 rounded-lg shadow-sm hover:shadow-md">
+                            <a href="taskDetail.php?idTask='.$task["task_id"].'" class="font-semibold text-gray-700 hover:underline hover:cursor-pointer">'.$task["titre"].'</a>
+                  <p class="text-sm text-gray-500 mt-2">Assigned to '.$task["username"].'</p>
+                  <div class="mt-2 text-xs flex justify-between text-gray-400">
+                    <span>Due: '.$task["created_at"].'</span>
+                  
+                  </div>
+
+                  <select name="status" class="mt-1 block w-full p-2 border rounded-md bg-white text-gray-700 focus:ring focus:ring-blue-300">
+                      <option value="to_do" <?= $task["status"] === "to_do" ? "selected" : "" ?>To Do</option>
+                      <option value="in_progress" <?= $task["status"] === "in_progress" ? "selected" : "" ?>In Progress</option>
+                      <option value="done" <?= $task["status"] === "done" ? "selected" : "" ?>Done</option>
+                  </select>
+                  
+                </div> ';
+
+              }
+            }
+            
+            ?>
+
+            
+            
           </div>
         </div>
 
@@ -161,14 +192,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         <div class="bg-white rounded-lg shadow-md">
           <div class="bg-yellow-500 text-white font-semibold p-4 rounded-t-lg">In Progress</div>
           <div class="p-4 space-y-4 ">
-            <div class="bg-gray-100 p-4 rounded-lg hover:shadow-md border border-red-500">
-              <h3 class="font-semibold text-gray-700">Fix Signup Bug</h3>
-              <p class="text-sm text-gray-500 mt-2">Assigned to Bob</p>
-              <div class="mt-2 text-xs flex justify-between text-gray-400">
-                <span>Due: 2024-12-28</span>
-               
-              </div>
-            </div>
+              <!-- Task Card -->
+              <?php
+
+                        foreach($tasks as $task){
+
+                          if($task['status'] === "In Progress"){
+                            echo '
+                            <div class="bg-gray-100 p-4 rounded-lg  shadow-sm hover:shadow-md">
+                            <a href="taskDetail.php?idTask='.$task["task_id"].'" class="font-semibold text-gray-700 hover:underline hover:cursor-pointer">'.$task["titre"].'</a>
+                              <p class="text-sm text-gray-500 mt-2">Assigned to '.$task["username"].'</p>
+                              <div class="mt-2 text-xs flex justify-between text-gray-400">
+                                <span>Due: '.$task["created_at"].'</span>
+                              </div>
+                            </div> ';
+
+                          }
+                        }
+
+                  ?>
           </div>
         </div>
 
@@ -176,14 +218,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         <div class="bg-white rounded-lg shadow-md">
           <div class="bg-green-500 text-white font-semibold p-4 rounded-t-lg">Done</div>
           <div class="p-4 space-y-4">
-            <div class="bg-gray-100 p-4 rounded-lg shadow-sm hover:shadow-md">
-              <h3 class="font-semibold text-gray-700">Deploy Application</h3>
-              <p class="text-sm text-gray-500 mt-2">Assigned to Charlie</p>
-              <div class="mt-2 text-xs flex justify-between text-gray-400">
-                <span>Completed: 2024-12-25</span>
-               
-              </div>
-            </div>
+            <!-- Task Card -->
+            <?php
+
+                      foreach($tasks as $task){
+
+                        if($task['status'] === "Done"){
+
+                          echo '
+
+                          <div class="bg-gray-100 p-4 rounded-lg shadow-sm hover:shadow-md">
+                            <a href="taskDetail.php?idTask='.$task["task_id"].'" class="font-semibold text-gray-700 hover:underline hover:cursor-pointer">'.$task["titre"].'</a>
+                            <p class="text-sm text-gray-500 mt-2">Assigned to '.$task["username"].'</p>
+                            <div class="mt-2 text-xs flex justify-between text-gray-400">
+                              <span>Due: '.$task["created_at"].'</span>
+                            
+                            </div>
+                          </div> ';
+
+                        }
+                      }
+
+                      ?>
           </div>
         </div>
       </div>
@@ -256,12 +312,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
   type.addEventListener("change" , (e)=>{
     console.log(e.target.value);
     let value = e.target.value;
-    if(value === "Bug"){
+    if(value === "bug"){
 
       TypeTask.innerHTML = "";
       TypeTask.innerHTML += SevertyInput();
 
-    }else if(value === "Feature"){
+    }else if(value === "feature"){
 
       TypeTask.innerHTML = "";
       TypeTask.innerHTML += PriorityInput();

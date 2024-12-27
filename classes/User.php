@@ -40,7 +40,14 @@ class User extends Database{
         return $user ? $user['id'] : false;
     }
 
+    public function getusers(){
+        $query = "SELECT * FROM users";
+        $stmt = $this->connexion->prepare($query);
+        $stmt->execute();
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        return $users;
+    }
 
 
 }
