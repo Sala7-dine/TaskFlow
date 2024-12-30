@@ -1,3 +1,5 @@
+[![wakatime](https://wakatime.com/badge/user/68eaff2e-4ab0-4a80-abe4-f60e8fff3b0f/project/4d907de4-50a1-4154-9bb6-85e22771b72b.svg)](https://wakatime.com/badge/user/68eaff2e-4ab0-4a80-abe4-f60e8fff3b0f/project/4d907de4-50a1-4154-9bb6-85e22771b72b)
+
 # TaskFlow 💻✨
 
 Bienvenue dans **TaskFlow**, une application web simple et intuitive pour la gestion de tâches. Ce projet est conçu pour vous initier aux bases de la Programmation Orientée Objet (POO) tout en construisant une application fonctionnelle. 
